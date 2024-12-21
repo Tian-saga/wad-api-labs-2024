@@ -22,17 +22,21 @@ router.get('/:id', (req, res) => {
 //Add a task
 router.post('/', (req, res) => {
     const { title, description, deadline, priority, done } = req.body;
+
     const newTask = {
         id: uuidv4(),
         title,
         description,
         deadline,
         priority,
-        done
+        done: done || false, // 默认值为 false
+        created_at: new Date().toISOString(), // 当前时间
+        updated_at: new Date().toISOString()  // 当前时间
     };
     tasksData.tasks.push(newTask);
-    res.status(201).json(newTask);
     tasksData.total_results++;
+
+    res.status(201).json(newTask);
 });
 
 //Update an existing task
@@ -42,8 +46,14 @@ router.put('/:id', (req, res) => {
     if (taskIndex === -1) {
         return res.status(404).json({ status: 404, message: 'Task not found' });
     }
-    const updatedTask = { ...tasksData.tasks[taskIndex], ...req.body, id:id };
+    const updatedTask = {
+        ...tasksData.tasks[taskIndex], 
+        ...req.body,                 
+        updated_at: new Date().toISOString() 
+    };
+
     tasksData.tasks[taskIndex] = updatedTask;
+
     res.json(updatedTask);
 });
 
