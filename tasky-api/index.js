@@ -6,15 +6,6 @@ import usersRouter from './api/users';
 import cors from 'cors';
 
 dotenv.config();
-
-const errHandler = (err, req, res, next) => {
-    /* if the error in development then send stack trace to display whole error,
-    if it's in production then just send error message  */
-    if(process.env.NODE_ENV === 'production') {
-      return res.status(500).send(`Something went wrong!`);
-    }
-    res.status(500).send(`Hey!! You caught the error 👍👍. Here's the details: ${err.stack} `);
-  };
   
 const app = express();
 
@@ -27,11 +18,32 @@ app.use(express.json());
 
 app.use('/api/tasks', tasksRouter);
 
-app.use(errHandler);
-
-//Users router
 app.use('/api/users', usersRouter);
 
+app.use((req, res, next) => {
+  res.status(404).json({
+      code: 404,
+      message: 'Not Found'
+  });
+});
+
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+      return next(err);
+  }
+  console.error(err.stack); 
+  if (err.name === 'ValidationError') {
+      res.status(400).json({
+          code: 400,
+          msg: err.message
+      });
+  } else {
+      res.status(err.status || 500).json({
+          code: err.status || 500,
+          message: err.message || 'Internal Server Error'
+      });
+  }
+});
 
 
 app.listen(port, () => {
