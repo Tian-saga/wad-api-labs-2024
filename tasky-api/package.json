@@ -7,7 +7,6 @@
     "start": "babel-node index.js",
     "dev": "nodemon --exec npm start"
   },
-
   "author": "Zitian Zhong/20109120",
   "license": "ISC",
   "devDependencies": {
@@ -19,6 +18,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "uuid": "^11.0.3"
   }
 }
